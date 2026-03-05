@@ -1,0 +1,54 @@
+<nav class="fixed bottom-0 left-0 right-0 bg-water-800 border-t border-water-700 z-40 safe-area-bottom"
+     style="padding-bottom: env(safe-area-inset-bottom)">
+  <div class="flex justify-around items-center h-16 max-w-lg mx-auto px-2">
+
+    <%# ホーム %>
+    <%= link_to dashboard_path,
+          class: "flex flex-col items-center gap-0.5 text-water-300 hover:text-white transition-colors px-3 py-1 #{current_page?(dashboard_path) ? 'text-white' : ''}" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+      </svg>
+      <span class="text-xs">ホーム</span>
+    <% end %>
+
+    <%# 施設 %>
+    <%= link_to facilities_path,
+          class: "flex flex-col items-center gap-0.5 text-water-300 hover:text-white transition-colors px-3 py-1 #{request.path.start_with?('/facilities') ? 'text-white' : ''}" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span class="text-xs">施設</span>
+    <% end %>
+
+    <%# 釣果記録（中央大ボタン） %>
+    <%= link_to new_catch_record_path,
+          class: "flex flex-col items-center gap-0.5 text-white" do %>
+      <span class="bg-water-400 hover:bg-water-300 rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors -mt-5 border-4 border-water-800">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+        </svg>
+      </span>
+      <span class="text-xs text-water-300">釣果記録</span>
+    <% end %>
+
+    <%# ルアー %>
+    <%= link_to lures_path,
+          class: "flex flex-col items-center gap-0.5 text-water-300 hover:text-white transition-colors px-3 py-1 #{request.path.start_with?('/lures') ? 'text-white' : ''}" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+      </svg>
+      <span class="text-xs">ルアー</span>
+    <% end %>
+
+    <%# プロフィール %>
+    <%= link_to users_profile_path,
+          class: "flex flex-col items-center gap-0.5 text-water-300 hover:text-white transition-colors px-3 py-1 #{request.path.start_with?('/users/profile') ? 'text-white' : ''}" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      </svg>
+      <span class="text-xs">マイページ</span>
+    <% end %>
+
+  </div>
+</nav>

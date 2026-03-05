@@ -1,0 +1,59 @@
+<% content_for :title, "施設登録 | AreaGo" %>
+
+<div class="pt-2">
+  <div class="flex items-center gap-3 mb-5">
+    <%= link_to facilities_path, class: "text-water-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="page-title mb-0">施設を追加</h1>
+  </div>
+
+  <%= form_with model: @facility, class: "space-y-5" do |f| %>
+    <%# Google Maps で検索 %>
+    <div data-controller="map"
+         data-map-mode-value="facility_search"
+         data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>">
+      <label class="form-label">施設名で検索</label>
+      <input type="text"
+             data-map-target="searchInput"
+             class="form-input mb-3"
+             placeholder="施設名・地名で検索...">
+      <div data-map-target="container" class="w-full rounded-xl overflow-hidden border border-pebble-200 mb-1" style="height: 220px;" data-turbo-cache="false"></div>
+      <p class="text-xs text-pebble-400">マップ上の施設をクリックして選択してください</p>
+      <%= f.hidden_field :name,      data: { "map-target": "facilityNameInput" } %>
+      <%= f.hidden_field :latitude,  data: { "map-target": "latInput" } %>
+      <%= f.hidden_field :longitude, data: { "map-target": "lngInput" } %>
+      <%= f.hidden_field :place_id,  data: { "map-target": "placeIdInput" } %>
+    </div>
+
+    <%# 施設情報 %>
+    <div>
+      <%= f.label :name, "施設名", class: "form-label" %>
+      <%= f.text_field :name, class: "form-input", placeholder: "施設名" %>
+    </div>
+    <div>
+      <%= f.label :address, "住所", class: "form-label" %>
+      <%= f.text_field :address, class: "form-input", placeholder: "住所" %>
+    </div>
+    <div>
+      <%= f.label :prefecture, "都道府県", class: "form-label" %>
+      <%= f.text_field :prefecture, class: "form-input", placeholder: "例: 東京都" %>
+    </div>
+    <div>
+      <%= f.label :phone_number, "電話番号", class: "form-label" %>
+      <%= f.telephone_field :phone_number, class: "form-input", placeholder: "任意" %>
+    </div>
+    <div>
+      <%= f.label :website_url, "Webサイト", class: "form-label" %>
+      <%= f.url_field :website_url, class: "form-input", placeholder: "任意" %>
+    </div>
+    <div>
+      <%= f.label :description, "施設メモ", class: "form-label" %>
+      <%= f.text_area :description, rows: 3, class: "form-input", placeholder: "料金・営業時間など（任意）" %>
+    </div>
+
+    <%= f.submit "登録する", class: "btn-primary w-full text-center cursor-pointer" %>
+  <% end %>
+</div>
