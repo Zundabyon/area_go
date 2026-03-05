@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  /* ===== Water / Teal（メインカラー）===== */
+  --color-water-50:  #ecfeff;
+  --color-water-100: #cffafe;
+  --color-water-200: #a5f3fc;
+  --color-water-300: #67e8f9;
+  --color-water-400: #22d3ee;
+  --color-water-500: #06b6d4;
+  --color-water-600: #0891b2;
+  --color-water-700: #0e7490;
+  --color-water-800: #155e75;
+  --color-water-900: #164e63;
+  --color-water-950: #083344;
+
+  /* ===== Forest / Green（サブカラー）===== */
+  --color-forest-50:  #f0fdf4;
+  --color-forest-100: #dcfce7;
+  --color-forest-200: #bbf7d0;
+  --color-forest-300: #86efac;
+  --color-forest-400: #4ade80;
+  --color-forest-500: #22c55e;
+  --color-forest-600: #16a34a;
+  --color-forest-700: #15803d;
+  --color-forest-800: #166534;
+  --color-forest-900: #14532d;
+
+  /* ===== Sand（川底・土）===== */
+  --color-sand-100: #fef3c7;
+  --color-sand-200: #fde68a;
+  --color-sand-400: #fbbf24;
+  --color-sand-600: #d97706;
+  --color-sand-800: #92400e;
+  --color-sand-900: #78350f;
+
+  /* ===== Pebble / Gray（UI要素）===== */
+  --color-pebble-50:  #f8fafc;
+  --color-pebble-100: #f1f5f9;
+  --color-pebble-200: #e2e8f0;
+  --color-pebble-300: #cbd5e1;
+  --color-pebble-400: #94a3b8;
+  --color-pebble-500: #64748b;
+  --color-pebble-600: #475569;
+  --color-pebble-700: #334155;
+  --color-pebble-800: #1e293b;
+  --color-pebble-900: #0f172a;
+
+  /* ===== Font ===== */
+  --font-sans: "Noto Sans JP", ui-sans-serif, system-ui, sans-serif;
+
+  /* ===== Animation ===== */
+  --animate-ripple: ripple 2s ease-in-out infinite;
+
+  @keyframes ripple {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50%       { transform: scale(1.05); opacity: 1; }
+  }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  /* カード */
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-pebble-100 p-4;
+  }
+
+  /* プライマリボタン */
+  .btn-primary {
+    @apply bg-water-600 hover:bg-water-700 text-white font-medium px-5 py-2.5 rounded-xl transition-colors shadow-sm;
+  }
+
+  /* セカンダリボタン */
+  .btn-secondary {
+    @apply bg-pebble-100 hover:bg-pebble-200 text-pebble-700 font-medium px-5 py-2.5 rounded-xl transition-colors;
+  }
+
+  /* デンジャーボタン */
+  .btn-danger {
+    @apply bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2.5 rounded-xl transition-colors shadow-sm;
+  }
+
+  /* フォームラベル */
+  .form-label {
+    @apply block text-sm font-medium text-pebble-700 mb-1;
+  }
+
+  /* フォーム入力 */
+  .form-input {
+    @apply w-full rounded-xl border border-pebble-200 bg-white px-3 py-2.5 text-pebble-900 text-sm
+           focus:outline-none focus:ring-2 focus:ring-water-400 focus:border-transparent;
+  }
+
+  /* フォームセレクト */
+  .form-select {
+    @apply w-full rounded-xl border border-pebble-200 bg-white px-3 py-2.5 text-pebble-900 text-sm
+           focus:outline-none focus:ring-2 focus:ring-water-400 focus:border-transparent;
+  }
+
+  /* ページタイトル */
+  .page-title {
+    @apply text-xl font-bold text-pebble-800 mb-4;
+  }
+
+  /* セクションタイトル */
+  .section-title {
+    @apply text-sm font-semibold text-water-700 uppercase tracking-wider mb-2;
+  }
+
+  /* バッジ */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-water  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-water-100 text-water-800; }
+  .badge-forest { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-forest-100 text-forest-800; }
+  .badge-sand   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sand-100 text-sand-800; }
+}
