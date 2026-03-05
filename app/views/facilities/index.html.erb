@@ -1,0 +1,39 @@
+<% content_for :title, "施設一覧 | AreaGo" %>
+
+<div class="space-y-4 pt-2">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title mb-0">施設一覧</h1>
+    <%= link_to new_facility_path, class: "btn-primary text-sm py-2 px-4" do %>
+      + 追加
+    <% end %>
+  </div>
+
+  <% if @facilities.empty? %>
+    <div class="card text-center py-10">
+      <p class="text-pebble-400 text-sm mb-2">施設が登録されていません</p>
+      <%= link_to "施設を追加する →", new_facility_path, class: "text-water-600 text-sm font-medium" %>
+    </div>
+  <% else %>
+    <div class="space-y-2">
+      <% @facilities.each do |facility| %>
+        <%= link_to facility_path(facility), class: "card block hover:border-water-200 transition-colors" do %>
+          <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-water-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="min-w-0">
+              <p class="font-semibold text-pebble-800 text-sm"><%= facility.name %></p>
+              <p class="text-xs text-pebble-400 truncate mt-0.5"><%= facility.address %></p>
+              <% if facility.prefecture.present? %>
+                <span class="badge badge-water mt-1"><%= facility.prefecture %></span>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

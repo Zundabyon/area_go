@@ -1,0 +1,76 @@
+<%= form_with model: lure, class: "space-y-5" do |f| %>
+  <% if lure.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+      <% lure.errors.full_messages.each do |msg| %>
+        <p><%= msg %></p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# ルアー名 %>
+  <div>
+    <%= f.label :name, "ルアー名", class: "form-label" %>
+    <%= f.text_field :name, class: "form-input", placeholder: "例: スプーン 2.5g ピンク" %>
+  </div>
+
+  <%# ルアー種類 %>
+  <div>
+    <label class="form-label">種類</label>
+    <div class="grid grid-cols-2 gap-2">
+      <% Lure.lure_types.each_key do |type| %>
+        <label class="flex items-center gap-2 p-3 rounded-xl border border-pebble-200 cursor-pointer has-[:checked]:border-water-500 has-[:checked]:bg-water-50 transition-colors">
+          <%= f.radio_button :lure_type, type, class: "text-water-600" %>
+          <span class="text-sm font-medium"><%= Lure::LURE_TYPE_LABELS[type] %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+
+  <%# カラー（表・裏）%>
+  <div class="grid grid-cols-2 gap-4">
+    <div data-controller="color-picker">
+      <label class="form-label">カラー（表）</label>
+      <div class="flex items-center gap-3 mb-2">
+        <div data-color-picker-target="preview"
+             class="w-10 h-10 rounded-xl border border-pebble-200 flex-shrink-0"
+             style="background-color: <%= lure.color_front %>"></div>
+        <%= f.hidden_field :color_front, data: { "color-picker-target": "input" }, value: lure.color_front %>
+      </div>
+      <div data-color-picker-target="picker" class="flex flex-wrap gap-1.5"></div>
+    </div>
+    <div data-controller="color-picker">
+      <label class="form-label">カラー（裏）</label>
+      <div class="flex items-center gap-3 mb-2">
+        <div data-color-picker-target="preview"
+             class="w-10 h-10 rounded-xl border border-pebble-200 flex-shrink-0"
+             style="background-color: <%= lure.color_back %>"></div>
+        <%= f.hidden_field :color_back, data: { "color-picker-target": "input" }, value: lure.color_back %>
+      </div>
+      <div data-color-picker-target="picker" class="flex flex-wrap gap-1.5"></div>
+    </div>
+  </div>
+
+  <%# 重さ %>
+  <div>
+    <%= f.label :weight, "重さ (g)", class: "form-label" %>
+    <%= f.number_field :weight, step: 0.1, min: 0, class: "form-input", placeholder: "例: 2.5" %>
+  </div>
+
+  <%# 浮力スライダー %>
+  <div data-controller="buoyancy-slider">
+    <label class="form-label">タイプ</label>
+    <div class="space-y-2">
+      <%= f.range_field :buoyancy, min: 1, max: 5, step: 1,
+            class: "w-full accent-water-600",
+            data: { "buoyancy-slider-target": "input", action: "input->buoyancy-slider#updateLabel" } %>
+      <div class="flex justify-between text-xs text-pebble-400">
+        <span>フローティング</span>
+        <span data-buoyancy-slider-target="label" class="font-medium text-water-700">サスペンド</span>
+        <span>シンキング</span>
+      </div>
+    </div>
+  </div>
+
+  <%= f.submit lure.new_record? ? "登録する" : "更新する",
+        class: "btn-primary w-full text-center cursor-pointer" %>
+<% end %>

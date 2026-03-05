@@ -1,0 +1,72 @@
+<% content_for :title, "#{@facility.name} | AreaGo" %>
+
+<div class="pt-2 space-y-4">
+  <div class="flex items-center gap-3">
+    <%= link_to facilities_path, class: "text-water-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="page-title mb-0 truncate"><%= @facility.name %></h1>
+  </div>
+
+  <div class="card">
+    <dl class="space-y-2 text-sm">
+      <% if @facility.address.present? %>
+        <div>
+          <dt class="text-pebble-400 text-xs">住所</dt>
+          <dd class="text-pebble-700"><%= @facility.address %></dd>
+        </div>
+      <% end %>
+      <% if @facility.phone_number.present? %>
+        <div>
+          <dt class="text-pebble-400 text-xs">電話</dt>
+          <dd><a href="tel:<%= @facility.phone_number %>" class="text-water-600"><%= @facility.phone_number %></a></dd>
+        </div>
+      <% end %>
+      <% if @facility.website_url.present? %>
+        <div>
+          <dt class="text-pebble-400 text-xs">Webサイト</dt>
+          <dd><a href="<%= @facility.website_url %>" target="_blank" class="text-water-600 underline truncate block"><%= @facility.website_url %></a></dd>
+        </div>
+      <% end %>
+      <% if @facility.description.present? %>
+        <div>
+          <dt class="text-pebble-400 text-xs">メモ</dt>
+          <dd class="text-pebble-700 whitespace-pre-line"><%= @facility.description %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <div class="flex justify-between items-center">
+    <h2 class="section-title">この施設での釣果</h2>
+    <%= link_to "記録する", new_catch_record_path(facility_id: @facility.id), class: "text-xs text-water-600 hover:underline" %>
+  </div>
+
+  <% if @catch_records.empty? %>
+    <div class="card text-center py-6">
+      <p class="text-pebble-400 text-sm">この施設での釣果はまだありません</p>
+    </div>
+  <% else %>
+    <div class="space-y-2">
+      <% @catch_records.each do |record| %>
+        <%= link_to catch_record_path(record), class: "card flex items-center gap-3 hover:border-water-200 transition-colors" do %>
+          <div class="min-w-0 flex-1">
+            <p class="font-medium text-pebble-800 text-sm"><%= record.fish_species %> <%= "#{record.size_cm}cm" if record.size_cm %></p>
+            <p class="text-xs text-pebble-400">
+              <%= record.caught_at.strftime("%Y/%m/%d %H:%M") %>
+              <% if record.stocking_time %> · 放流 <%= record.stocking_time.strftime("%H:%M") %><% end %>
+            </p>
+          </div>
+          <% if record.lure %>
+            <div class="flex gap-0.5 flex-shrink-0">
+              <span class="w-4 h-4 rounded-full border border-pebble-100" style="background-color: <%= record.lure.color_front %>"></span>
+              <span class="w-4 h-4 rounded-full border border-pebble-100" style="background-color: <%= record.lure.color_back %>"></span>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,43 @@
+<% content_for :title, "ログイン | AreaGo" %>
+
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-water-800 to-water-950 px-4 py-12">
+  <div class="w-full max-w-sm">
+    <%# ロゴ・タイトル %>
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 bg-water-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-white">AreaGo</h1>
+      <p class="text-water-300 text-sm mt-1">エリアトラウト釣果管理</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-6">
+      <h2 class="text-lg font-semibold text-pebble-800 mb-5">ログイン</h2>
+
+      <%= form_with(model: resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <div class="space-y-4">
+          <div>
+            <%= f.label :email, "メールアドレス", class: "form-label" %>
+            <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input" %>
+          </div>
+          <div>
+            <%= f.label :password, "パスワード", class: "form-label" %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "form-input" %>
+          </div>
+          <div class="flex items-center">
+            <%= f.check_box :remember_me, class: "rounded border-pebble-300 text-water-600 mr-2" %>
+            <%= f.label :remember_me, "ログイン状態を保持", class: "text-sm text-pebble-600" %>
+          </div>
+          <%= f.submit "ログイン", class: "btn-primary w-full text-center cursor-pointer mt-2" %>
+        </div>
+      <% end %>
+
+      <div class="mt-4 text-center text-sm text-pebble-500">
+        アカウントをお持ちでない方は
+        <%= link_to "新規登録", new_registration_path(resource_name), class: "text-water-600 font-medium hover:underline" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,7 @@
 {
-  "name": "AreaGo",
+  "name": "AreaGo - エリアトラウト釣果管理",
+  "short_name": "AreaGo",
+  "description": "エリアトラウト釣行の施設・ルアー・釣果を記録・管理するアプリ",
   "icons": [
     {
       "src": "/icon.png",
@@ -13,10 +15,25 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
+  "orientation": "portrait",
   "scope": "/",
-  "description": "AreaGo.",
-  "theme_color": "red",
-  "background_color": "red"
+  "lang": "ja",
+  "theme_color": "#0e7490",
+  "background_color": "#ecfdf5",
+  "shortcuts": [
+    {
+      "name": "釣果を記録",
+      "short_name": "釣果記録",
+      "url": "/catch_records/new",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "ルアーを登録",
+      "short_name": "ルアー登録",
+      "url": "/lures/new",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    }
+  ]
 }

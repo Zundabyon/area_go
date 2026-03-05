@@ -1,0 +1,114 @@
+<% content_for :title, "#{@catch_record.fish_species} | AreaGo" %>
+
+<div class="pt-2 space-y-4">
+  <div class="flex items-center gap-3">
+    <%= link_to catch_records_path, class: "text-water-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="page-title mb-0">釣果詳細</h1>
+    <div class="ml-auto">
+      <%= link_to edit_catch_record_path(@catch_record), class: "text-water-600 p-2" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      <% end %>
+    </div>
+  </div>
+
+  <%# メイン情報 %>
+  <div class="card">
+    <div class="flex items-start gap-3 mb-4">
+      <div class="w-12 h-12 bg-water-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">🐟</div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-bold text-pebble-800"><%= @catch_record.fish_species %></h2>
+          <% if @catch_record.size_cm %>
+            <span class="badge badge-water"><%= @catch_record.size_cm %>cm</span>
+          <% end %>
+        </div>
+        <p class="text-sm text-pebble-500"><%= @catch_record.facility.name %></p>
+      </div>
+    </div>
+    <dl class="grid grid-cols-2 gap-3 text-sm">
+      <div>
+        <dt class="text-pebble-400 text-xs">釣れた日時</dt>
+        <dd class="text-pebble-700 mt-0.5"><%= @catch_record.caught_at.strftime("%Y/%m/%d %H:%M") %></dd>
+      </div>
+      <% if @catch_record.stocking_time %>
+        <div>
+          <dt class="text-pebble-400 text-xs">放流時間</dt>
+          <dd class="text-pebble-700 mt-0.5"><%= @catch_record.stocking_time.strftime("%H:%M") %></dd>
+        </div>
+      <% end %>
+      <% if @catch_record.depth_m %>
+        <div>
+          <dt class="text-pebble-400 text-xs">深さ</dt>
+          <dd class="text-pebble-700 mt-0.5"><%= @catch_record.depth_m %>m</dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <%# 使用ルアー %>
+  <% if @catch_record.lure %>
+    <div class="card">
+      <h3 class="section-title">使用ルアー</h3>
+      <%= link_to lure_path(@catch_record.lure), class: "flex items-center gap-3" do %>
+        <div class="w-10 h-10 rounded-xl border border-pebble-100 overflow-hidden grid grid-rows-2 flex-shrink-0">
+          <div style="background-color: <%= @catch_record.lure.color_front %>"></div>
+          <div style="background-color: <%= @catch_record.lure.color_back %>"></div>
+        </div>
+        <div>
+          <p class="font-medium text-pebble-800"><%= @catch_record.lure.name %></p>
+          <p class="text-xs text-pebble-400"><%= @catch_record.lure.lure_type_label %> · <%= @catch_record.lure.buoyancy_label %></p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# 釣り方チャート %>
+  <% if @catch_record.fishing_method_chart? %>
+    <div class="card">
+      <h3 class="section-title">釣り方チャート</h3>
+      <div data-controller="fishing-chart"
+           data-fishing-chart-depth-value="<%= @catch_record.depth_m || 5.0 %>"
+           data-fishing-chart-readonly-value="true"
+           data-fishing-chart-existing-data-value="<%= @catch_record.fishing_method_data.to_json %>">
+        <div class="relative rounded-xl overflow-hidden border border-water-100">
+          <canvas data-fishing-chart-target="canvas" class="w-full" style="height: 220px;"></canvas>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 地点 %>
+  <% if @catch_record.latitude && @catch_record.longitude %>
+    <div class="card">
+      <h3 class="section-title">釣れた地点</h3>
+      <div data-controller="map"
+           data-map-mode-value="view"
+           data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
+           data-map-initial-lat-value="<%= @catch_record.latitude %>"
+           data-map-initial-lng-value="<%= @catch_record.longitude %>"
+           data-map-pins-value="<%= [@catch_record.as_json(only: [:id, :latitude, :longitude, :size_cm, :fish_species])].to_json %>">
+        <div data-map-target="container" class="w-full rounded-xl overflow-hidden" style="height: 200px;" data-turbo-cache="false"></div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# メモ %>
+  <% if @catch_record.memo.present? %>
+    <div class="card">
+      <h3 class="section-title">メモ</h3>
+      <p class="text-sm text-pebble-700 whitespace-pre-line"><%= @catch_record.memo %></p>
+    </div>
+  <% end %>
+
+  <%= button_to catch_record_path(@catch_record), method: :delete,
+        data: { turbo_confirm: "この釣果記録を削除しますか？" },
+        class: "w-full text-center text-sm text-red-500 py-2 hover:underline mt-2" do %>
+    削除する
+  <% end %>
+</div>

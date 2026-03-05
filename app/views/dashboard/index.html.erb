@@ -1,0 +1,95 @@
+<% content_for :title, "ホーム | AreaGo" %>
+
+<div class="space-y-6 pt-2">
+  <%# ウェルカムヘッダー %>
+  <div class="bg-gradient-to-br from-water-700 to-water-900 rounded-2xl p-5 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+        <path d="M0,100 C50,80 100,120 150,100 S250,80 300,100 S350,120 400,100 L400,200 L0,200Z" fill="white"/>
+        <path d="M0,130 C50,110 100,150 150,130 S250,110 300,130 S350,150 400,130 L400,200 L0,200Z" fill="white" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="relative">
+      <p class="text-water-200 text-sm">おかえりなさい</p>
+      <h1 class="text-xl font-bold mt-0.5"><%= current_user.username %> さん</h1>
+      <div class="flex gap-4 mt-3">
+        <div class="text-center">
+          <p class="text-2xl font-bold"><%= @catch_count %></p>
+          <p class="text-water-300 text-xs">釣果記録</p>
+        </div>
+        <div class="w-px bg-water-600"></div>
+        <div class="text-center">
+          <p class="text-2xl font-bold"><%= @lure_count %></p>
+          <p class="text-water-300 text-xs">ルアー数</p>
+        </div>
+        <% if @top_facility %>
+          <div class="w-px bg-water-600"></div>
+          <div class="text-center min-w-0">
+            <p class="text-sm font-bold truncate"><%= @top_facility.first.last rescue "—" %></p>
+            <p class="text-water-300 text-xs">よく行く施設</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# クイックアクション %>
+  <div class="grid grid-cols-2 gap-3">
+    <%= link_to new_catch_record_path, class: "card flex items-center gap-3 hover:border-water-300 transition-colors" do %>
+      <span class="w-10 h-10 bg-water-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-water-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+      </span>
+      <span class="text-sm font-medium text-pebble-700">釣果を記録</span>
+    <% end %>
+    <%= link_to new_lure_path, class: "card flex items-center gap-3 hover:border-water-300 transition-colors" do %>
+      <span class="w-10 h-10 bg-forest-100 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-forest-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+      </span>
+      <span class="text-sm font-medium text-pebble-700">ルアー登録</span>
+    <% end %>
+  </div>
+
+  <%# 最近の釣果 %>
+  <div>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="section-title">最近の釣果</h2>
+      <%= link_to "すべて見る", catch_records_path, class: "text-xs text-water-600 hover:underline" %>
+    </div>
+
+    <% if @recent_catch_records.empty? %>
+      <div class="card text-center py-8">
+        <p class="text-pebble-400 text-sm">まだ釣果が記録されていません</p>
+        <%= link_to "最初の釣果を記録する →", new_catch_record_path, class: "text-water-600 text-sm font-medium mt-2 inline-block" %>
+      </div>
+    <% else %>
+      <div class="space-y-2">
+        <% @recent_catch_records.each do |record| %>
+          <%= link_to catch_record_path(record), class: "card flex items-center gap-3 hover:border-water-200 transition-colors" do %>
+            <div class="w-10 h-10 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-lg">🐟</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="font-medium text-pebble-800 text-sm truncate">
+                <%= record.fish_species %> <%= "#{record.size_cm}cm" if record.size_cm %>
+              </p>
+              <p class="text-xs text-pebble-400 truncate">
+                <%= record.facility.name %> ·
+                <%= record.caught_at.strftime("%m/%d %H:%M") %>
+              </p>
+            </div>
+            <% if record.lure %>
+              <div class="flex gap-1 flex-shrink-0">
+                <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= record.lure.color_front %>"></span>
+                <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= record.lure.color_back %>"></span>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

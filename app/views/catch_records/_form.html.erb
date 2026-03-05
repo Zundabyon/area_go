@@ -1,0 +1,124 @@
+<%= form_with model: catch_record, class: "space-y-5" do |f| %>
+  <% if catch_record.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+      <% catch_record.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+    </div>
+  <% end %>
+
+  <%# 施設 %>
+  <div>
+    <%= f.label :facility_id, "施設", class: "form-label" %>
+    <%= f.select :facility_id,
+          facilities.map { |f| [f.name, f.id] },
+          { include_blank: "施設を選択" },
+          class: "form-input" %>
+    <p class="text-xs text-pebble-400 mt-1">
+      施設が見つからない場合は <%= link_to "こちらから登録", new_facility_path, class: "text-water-600 underline" %>
+    </p>
+  </div>
+
+  <%# 魚種 %>
+  <div>
+    <%= f.label :fish_species, "魚の種類", class: "form-label" %>
+    <%= f.select :fish_species,
+          CatchRecord::FISH_SPECIES,
+          { include_blank: "種類を選択" },
+          class: "form-input" %>
+  </div>
+
+  <%# サイズ %>
+  <div>
+    <%= f.label :size_cm, "サイズ (cm)", class: "form-label" %>
+    <%= f.number_field :size_cm, step: 0.5, min: 0, class: "form-input", placeholder: "例: 35.5" %>
+  </div>
+
+  <%# 釣れた日時 %>
+  <div>
+    <%= f.label :caught_at, "釣れた日時", class: "form-label" %>
+    <%= f.datetime_local_field :caught_at,
+          value: catch_record.caught_at&.strftime("%Y-%m-%dT%H:%M") || Time.current.strftime("%Y-%m-%dT%H:%M"),
+          class: "form-input" %>
+  </div>
+
+  <%# 放流時間 %>
+  <div>
+    <%= f.label :stocking_time, "放流時間", class: "form-label" %>
+    <%= f.time_field :stocking_time,
+          value: catch_record.stocking_time&.strftime("%H:%M"),
+          class: "form-input" %>
+    <p class="text-xs text-pebble-400 mt-1">その日の施設の放流時刻（任意）</p>
+  </div>
+
+  <%# 深さ %>
+  <div>
+    <%= f.label :depth_m, "釣れた深さ (m)", class: "form-label" %>
+    <%= f.number_field :depth_m, step: 0.1, min: 0, class: "form-input", placeholder: "例: 1.5" %>
+  </div>
+
+  <%# 釣れた地点（地図） %>
+  <div>
+    <label class="form-label">釣れた地点</label>
+    <div data-controller="map"
+         data-map-mode-value="catch_pin"
+         data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
+         data-map-initial-lat-value="<%= catch_record.latitude || 35.6812 %>"
+         data-map-initial-lng-value="<%= catch_record.longitude || 139.7671 %>">
+      <div data-map-target="container" class="w-full rounded-xl overflow-hidden border border-pebble-200" style="height: 220px;" data-turbo-cache="false"></div>
+      <%= f.hidden_field :latitude,  data: { "map-target": "latInput" } %>
+      <%= f.hidden_field :longitude, data: { "map-target": "lngInput" } %>
+    </div>
+    <p class="text-xs text-pebble-400 mt-1">地図をタップして釣れた地点を指定（任意）</p>
+  </div>
+
+  <%# ルアー %>
+  <div>
+    <%= f.label :lure_id, "使用ルアー", class: "form-label" %>
+    <%= f.select :lure_id,
+          lures.map { |l| ["#{l.name} (#{l.lure_type_label})", l.id] },
+          { include_blank: "ルアーを選択（任意）" },
+          class: "form-input" %>
+  </div>
+
+  <%# 釣り方チャート %>
+  <div>
+    <label class="form-label">釣り方チャート</label>
+    <p class="text-xs text-pebble-400 mb-2">水中でのルアーの軌跡を描いてください</p>
+    <div data-controller="fishing-chart"
+         data-fishing-chart-depth-value="<%= catch_record.depth_m || 5.0 %>"
+         data-fishing-chart-readonly-value="false"
+         data-fishing-chart-existing-data-value="<%= catch_record.fishing_method_data.to_json %>">
+      <div class="flex items-center gap-2 mb-2">
+        <label class="text-xs text-pebble-500">線の色</label>
+        <input type="color" value="#0ea5e9"
+               data-fishing-chart-target="colorPicker"
+               class="w-7 h-7 rounded cursor-pointer border border-pebble-200">
+        <label class="text-xs text-pebble-500">太さ</label>
+        <select data-fishing-chart-target="lineWidth" class="text-xs border border-pebble-200 rounded px-2 py-1">
+          <option value="2">細い</option>
+          <option value="4" selected>普通</option>
+          <option value="8">太い</option>
+        </select>
+        <button type="button" data-action="click->fishing-chart#undo"
+                class="text-xs bg-pebble-100 rounded px-2 py-1 hover:bg-pebble-200">戻す</button>
+        <button type="button" data-action="click->fishing-chart#clear"
+                class="text-xs bg-red-50 text-red-600 rounded px-2 py-1 hover:bg-red-100">クリア</button>
+      </div>
+      <div class="relative rounded-xl overflow-hidden border-2 border-water-200 shadow-inner">
+        <canvas data-fishing-chart-target="canvas"
+                class="w-full touch-none"
+                style="height: 260px; cursor: crosshair;"></canvas>
+        <p class="absolute bottom-2 right-2 text-xs text-white/60 pointer-events-none">タップ/ドラッグで描こう</p>
+      </div>
+      <%= f.hidden_field :fishing_method_data, data: { "fishing-chart-target": "dataInput" } %>
+    </div>
+  </div>
+
+  <%# メモ %>
+  <div>
+    <%= f.label :memo, "メモ", class: "form-label" %>
+    <%= f.text_area :memo, rows: 3, class: "form-input", placeholder: "状況・天気・水温など" %>
+  </div>
+
+  <%= f.submit catch_record.new_record? ? "記録する" : "更新する",
+        class: "btn-primary w-full text-center cursor-pointer" %>
+<% end %>

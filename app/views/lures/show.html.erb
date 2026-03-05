@@ -1,0 +1,64 @@
+<% content_for :title, "#{@lure.name} | AreaGo" %>
+
+<div class="pt-2 space-y-4">
+  <div class="flex items-center gap-3">
+    <%= link_to lures_path, class: "text-water-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="page-title mb-0 truncate"><%= @lure.name %></h1>
+    <div class="ml-auto flex gap-2">
+      <%= link_to edit_lure_path(@lure), class: "text-water-600 p-2" do %>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex items-center gap-4 mb-4">
+      <div class="w-16 h-16 rounded-2xl border border-pebble-100 overflow-hidden grid grid-rows-2 flex-shrink-0">
+        <div style="background-color: <%= @lure.color_front %>"></div>
+        <div style="background-color: <%= @lure.color_back %>"></div>
+      </div>
+      <div>
+        <span class="badge badge-water mb-1"><%= @lure.lure_type_label %></span>
+        <p class="text-lg font-bold text-pebble-800"><%= @lure.name %></p>
+      </div>
+    </div>
+    <dl class="grid grid-cols-2 gap-3 text-sm">
+      <div>
+        <dt class="text-pebble-400 text-xs">カラー（表）</dt>
+        <dd class="flex items-center gap-1.5 mt-0.5">
+          <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= @lure.color_front %>"></span>
+          <span class="text-pebble-700 uppercase"><%= @lure.color_front %></span>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-pebble-400 text-xs">カラー（裏）</dt>
+        <dd class="flex items-center gap-1.5 mt-0.5">
+          <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= @lure.color_back %>"></span>
+          <span class="text-pebble-700 uppercase"><%= @lure.color_back %></span>
+        </dd>
+      </div>
+      <% if @lure.weight %>
+        <div>
+          <dt class="text-pebble-400 text-xs">重さ</dt>
+          <dd class="text-pebble-700 mt-0.5"><%= @lure.weight %>g</dd>
+        </div>
+      <% end %>
+      <div>
+        <dt class="text-pebble-400 text-xs">タイプ</dt>
+        <dd class="text-pebble-700 mt-0.5"><%= @lure.buoyancy_label %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <%= button_to lure_path(@lure), method: :delete,
+        data: { turbo_confirm: "このルアーを削除しますか？" },
+        class: "w-full text-center text-sm text-red-500 py-2 hover:underline" do %>
+    削除する
+  <% end %>
+</div>
