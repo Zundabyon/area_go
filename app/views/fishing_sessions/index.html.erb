@@ -1,0 +1,45 @@
+<% content_for :title, "釣行一覧 | AreaGo" %>
+
+<div class="space-y-4 pt-2">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title mb-0">釣行記録</h1>
+    <%= link_to new_fishing_session_path, class: "btn-primary text-sm px-4 py-2" do %>
+      + 記録する
+    <% end %>
+  </div>
+
+  <% if @fishing_sessions.empty? %>
+    <div class="card text-center py-10">
+      <p class="text-3xl mb-3">🎣</p>
+      <p class="text-pebble-400 text-sm mb-2">まだ釣行が記録されていません</p>
+      <%= link_to "最初の釣行を記録する →", new_fishing_session_path, class: "text-water-600 text-sm font-medium" %>
+    </div>
+  <% else %>
+    <div class="space-y-2">
+      <% @fishing_sessions.each do |session| %>
+        <%= link_to fishing_session_path(session), class: "card block hover:border-water-200 transition-colors" do %>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl">
+              <%= session.weather_icon %>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <p class="font-semibold text-pebble-800"><%= session.fished_on.strftime("%Y年%m月%d日") %></p>
+                <span class="text-xs text-pebble-500">
+                  <%= [session.weather_am, session.weather_pm].compact.uniq.join(" / ") %>
+                </span>
+              </div>
+              <p class="text-sm text-pebble-600 truncate"><%= session.facility.name %></p>
+              <p class="text-xs text-pebble-400 mt-0.5">
+                釣果 <%= session.catch_records.size %>件
+              </p>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-pebble-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

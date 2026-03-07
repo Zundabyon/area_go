@@ -1,0 +1,131 @@
+<%= form_with model: fishing_session, class: "space-y-5" do |f| %>
+  <% if fishing_session.errors.any? %>
+    <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
+      <% fishing_session.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
+    </div>
+  <% end %>
+
+  <%# 釣行日 %>
+  <div>
+    <%= f.label :fished_on, "釣行日", class: "form-label" %>
+    <%= f.date_field :fished_on, class: "form-input" %>
+  </div>
+
+  <%# 施設（都道府県 → 施設の2段階選択） %>
+  <div data-controller="prefecture-filter"
+       data-prefecture-filter-facilities-value="<%= facilities.map { |fac| { id: fac.id, name: fac.name, prefecture: fac.prefecture } }.to_json %>"
+       data-prefecture-filter-initial-prefecture-value="<%= fishing_session.facility&.prefecture.to_s %>"
+       data-prefecture-filter-initial-facility-id-value="<%= fishing_session.facility_id.to_s %>">
+
+    <div class="mb-3">
+      <label class="form-label">都道府県</label>
+      <select data-prefecture-filter-target="prefectureSelect"
+              data-action="change->prefecture-filter#filter"
+              class="form-input">
+        <option value="">都道府県を選択</option>
+      </select>
+    </div>
+
+    <div>
+      <%= f.label :facility_id, "施設", class: "form-label" %>
+      <%= f.select :facility_id, [],
+            { include_blank: "← 先に都道府県を選択" },
+            class: "form-input",
+            disabled: true,
+            data: { "prefecture-filter-target": "facilitySelect" } %>
+      <p class="text-xs text-pebble-400 mt-1">
+        施設が見つからない場合は <%= link_to "こちらから登録", new_facility_path, class: "text-water-600 underline" %>
+      </p>
+    </div>
+  </div>
+
+  <%# 天気（午前・午後） %>
+  <div class="space-y-3">
+    <label class="form-label">天気</label>
+
+    <div>
+      <p class="text-xs text-pebble-500 mb-1.5">☀️ 午前</p>
+      <div class="flex gap-2 flex-wrap" data-controller="weather-picker">
+        <% FishingSession::WEATHER_OPTIONS.each do |w| %>
+          <label class="cursor-pointer inline-flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border-2 text-xs font-medium transition-colors select-none <%= fishing_session.weather_am == w ? 'border-water-500 bg-water-50 text-water-700' : 'border-pebble-200 bg-white text-pebble-600' %>"
+                 data-weather-picker-target="btn"
+                 data-action="click->weather-picker#select"
+                 data-selected="<%= fishing_session.weather_am == w %>">
+            <%= f.radio_button :weather_am, w, id: "weather_am_#{w}",
+                  style: "position:absolute;opacity:0;width:0;height:0;overflow:hidden" %>
+            <span class="text-xl leading-none"><%= FishingSession::WEATHER_ICONS[w] %></span>
+            <span><%= w %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div>
+      <p class="text-xs text-pebble-500 mb-1.5">🌙 午後</p>
+      <div class="flex gap-2 flex-wrap" data-controller="weather-picker">
+        <% FishingSession::WEATHER_OPTIONS.each do |w| %>
+          <label class="cursor-pointer inline-flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl border-2 text-xs font-medium transition-colors select-none <%= fishing_session.weather_pm == w ? 'border-water-500 bg-water-50 text-water-700' : 'border-pebble-200 bg-white text-pebble-600' %>"
+                 data-weather-picker-target="btn"
+                 data-action="click->weather-picker#select"
+                 data-selected="<%= fishing_session.weather_pm == w %>">
+            <%= f.radio_button :weather_pm, w, id: "weather_pm_#{w}",
+                  style: "position:absolute;opacity:0;width:0;height:0;overflow:hidden" %>
+            <span class="text-xl leading-none"><%= FishingSession::WEATHER_ICONS[w] %></span>
+            <span><%= w %></span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# 池コンディション + 号池 %>
+  <div class="grid grid-cols-2 gap-4">
+    <%# 水質 %>
+    <div>
+      <label class="form-label">水質</label>
+      <div class="flex flex-col gap-2 mt-1" data-controller="weather-picker">
+        <% FishingSession::WATER_CONDITIONS.each do |cond| %>
+          <label class="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-xl border-2 text-sm font-medium transition-colors select-none <%= fishing_session.water_condition == cond[:value] ? 'border-water-500 bg-water-50 text-water-700' : 'border-pebble-200 bg-white text-pebble-600' %>"
+                 data-weather-picker-target="btn"
+                 data-action="click->weather-picker#select"
+                 data-selected="<%= fishing_session.water_condition == cond[:value] %>">
+            <%= f.radio_button :water_condition, cond[:value], id: "water_condition_#{cond[:value]}",
+                  style: "position:absolute;opacity:0;width:0;height:0;overflow:hidden" %>
+            <span class="text-lg leading-none"><%= cond[:icon] %></span>
+            <div class="leading-tight">
+              <div><%= cond[:label] %></div>
+              <div class="text-xs font-normal opacity-60"><%= cond[:desc] %></div>
+            </div>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <%# 号池 %>
+    <div>
+      <label class="form-label">号池</label>
+      <div class="flex flex-wrap gap-2 mt-1" data-controller="weather-picker">
+        <% (1..8).each do |n| %>
+          <label class="cursor-pointer inline-flex items-center justify-center w-10 h-10 rounded-xl border-2 text-sm font-bold transition-colors select-none <%= fishing_session.pond_number == n.to_s ? 'border-water-500 bg-water-50 text-water-700' : 'border-pebble-200 bg-white text-pebble-600' %>"
+                 data-weather-picker-target="btn"
+                 data-action="click->weather-picker#select"
+                 data-selected="<%= fishing_session.pond_number == n.to_s %>">
+            <%= f.radio_button :pond_number, n, id: "pond_#{n}",
+                  style: "position:absolute;opacity:0;width:0;height:0;overflow:hidden" %>
+            <%= n %>
+          </label>
+        <% end %>
+      </div>
+      <p class="text-xs text-pebble-400 mt-2">複数池の場合に選択</p>
+    </div>
+  </div>
+
+  <%# メモ %>
+  <div>
+    <%= f.label :memo, "メモ", class: "form-label" %>
+    <%= f.text_area :memo, rows: 3, class: "form-input", placeholder: "水温・混雑状況・コンディションなど" %>
+  </div>
+
+  <%= f.submit fishing_session.new_record? ? "釣行を記録" : "更新する",
+        class: "btn-primary w-full text-center cursor-pointer" %>
+<% end %>

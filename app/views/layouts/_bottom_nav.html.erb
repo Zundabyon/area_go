@@ -21,15 +21,15 @@
       <span class="text-xs">施設</span>
     <% end %>
 
-    <%# 釣果記録（中央大ボタン） %>
-    <%= link_to new_catch_record_path,
+    <%# 釣行記録（中央大ボタン） %>
+    <%= link_to new_fishing_session_path,
           class: "flex flex-col items-center gap-0.5 text-white" do %>
       <span class="bg-water-400 hover:bg-water-300 rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors -mt-5 border-4 border-water-800">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
         </svg>
       </span>
-      <span class="text-xs text-water-300">釣果記録</span>
+      <span class="text-xs text-water-300">釣行記録</span>
     <% end %>
 
     <%# ルアー %>
