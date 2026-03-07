@@ -1,11 +1,25 @@
 class CatchRecord < ApplicationRecord
   belongs_to :user
   belongs_to :facility
-  belongs_to :lure, optional: true
+  belongs_to :lure,            optional: true
+  belongs_to :fishing_session, optional: true
+
+  WEATHERS      = ["晴れ", "曇り", "雨", "雪"].freeze
+  WIND_STRENGTHS = ["無風", "弱い", "強い"].freeze
 
   FISH_SPECIES = [
-    "ニジマス", "ヤマメ", "イワナ", "ブラウントラウト",
-    "ブルックトラウト", "レインボートラウト", "イトウ", "その他"
+    "レインボートラウト（ニジマス）",
+    "ブラウントラウト",
+    "ブルックトラウト（カワマス）",
+    "イトウ",
+    "スチールヘッド",
+    "ドナルドソン",
+    "ヤシオマス",
+    "ヤマメ",
+    "サクラマス",
+    "アマゴ",
+    "サツキマス",
+    "イワナ",
   ].freeze
 
   validates :caught_at,    presence: true

@@ -14,10 +14,14 @@ class LuresController < ApplicationController
 
   def create
     @lure = current_user.lures.new(lure_params)
-    if @lure.save
-      redirect_to @lure, notice: "ルアーを登録しました"
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @lure.save
+        format.html { redirect_to @lure, notice: "ルアーを登録しました" }
+        format.json { render json: { id: @lure.id, name: @lure.name, lure_type_label: @lure.lure_type_label }, status: :created }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+        format.json { render json: { errors: @lure.errors.full_messages }, status: :unprocessable_entity }
+      end
     end
   end
 

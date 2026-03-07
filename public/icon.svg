@@ -1,3 +1,42 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景円 -->
+  <circle cx="256" cy="256" r="256" fill="#0e7490"/>
+
+  <!-- 水面の波（下部） -->
+  <path d="M0 340 Q64 315 128 340 Q192 365 256 340 Q320 315 384 340 Q448 365 512 340 L512 512 L0 512 Z" fill="#155e75" opacity="0.7"/>
+  <path d="M0 375 Q80 350 160 375 Q240 400 320 375 Q400 350 512 375 L512 512 L0 512 Z" fill="#0c4a6e" opacity="0.5"/>
+
+  <!-- スプーンルアー本体（メタリック感） -->
+  <ellipse cx="256" cy="205" rx="36" ry="88" fill="#cffafe" transform="rotate(-12 256 205)"/>
+  <ellipse cx="250" cy="190" rx="11" ry="32" fill="white" opacity="0.55" transform="rotate(-12 250 190)"/>
+  <ellipse cx="256" cy="205" rx="36" ry="88" fill="none" stroke="#06b6d4" stroke-width="2" transform="rotate(-12 256 205)" opacity="0.4"/>
+
+  <!-- 釣り糸（上） -->
+  <line x1="265" y1="52" x2="258" y2="118" stroke="#e2e8f0" stroke-width="2.5" opacity="0.85"/>
+  <!-- スイベル -->
+  <circle cx="258" cy="118" r="7" fill="#94a3b8"/>
+  <circle cx="258" cy="118" r="4" fill="#cbd5e1"/>
+
+  <!-- トレブルフック（ルアー下部） -->
+  <g transform="translate(256,298)" fill="none" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round">
+    <circle cx="0" cy="-10" r="8" stroke="#64748b" fill="none" stroke-width="3"/>
+    <path d="M-8 0 C-24 6 -22 24 -10 28"/>
+    <path d="M8 0 C24 6 22 24 10 28"/>
+    <path d="M0 0 C0 16 6 28 14 26"/>
+  </g>
+
+  <!-- 魚のシルエット（右下・水中） -->
+  <g transform="translate(358, 388) rotate(-8)" opacity="0.75">
+    <ellipse cx="0" cy="0" rx="30" ry="13" fill="#22d3ee"/>
+    <path d="M26 0 L46 -13 L46 13 Z" fill="#22d3ee"/>
+    <circle cx="-16" cy="-3" r="4" fill="white"/>
+    <circle cx="-17" cy="-3.5" r="2" fill="#0e7490"/>
+    <path d="M-6 -13 Q5 -22 16 -13" stroke="#06b6d4" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- 気泡 -->
+  <circle cx="318" cy="265" r="5.5" fill="none" stroke="#67e8f9" stroke-width="2" opacity="0.7"/>
+  <circle cx="338" cy="244" r="3.5" fill="none" stroke="#67e8f9" stroke-width="2" opacity="0.5"/>
+  <circle cx="302" cy="252" r="3" fill="none" stroke="#a5f3fc" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="328" cy="280" r="2.5" fill="none" stroke="#67e8f9" stroke-width="1.5" opacity="0.45"/>
 </svg>

@@ -12,6 +12,11 @@ class CatchRecordsController < ApplicationController
 
   def new
     @catch_record = current_user.catch_records.new(caught_at: Time.current)
+    if params[:fishing_session_id].present?
+      @fishing_session = current_user.fishing_sessions.find_by(id: params[:fishing_session_id])
+      @catch_record.fishing_session_id = @fishing_session&.id
+      @catch_record.facility_id        = @fishing_session&.facility_id
+    end
     @facilities = Facility.order(:name)
     @lures      = current_user.lures.order(:name)
   end
@@ -75,7 +80,8 @@ class CatchRecordsController < ApplicationController
     params.require(:catch_record).permit(
       :facility_id, :lure_id, :size_cm, :fish_species,
       :latitude, :longitude, :depth_m, :memo,
-      :caught_at, :stocking_time, :fishing_method_data
+      :caught_at, :stocking_time, :fishing_method_data,
+      :fishing_session_id, :weather, :wind_strength
     )
   end
 end

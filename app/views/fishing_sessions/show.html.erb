@@ -1,0 +1,126 @@
+<% content_for :title, "釣行詳細 | AreaGo" %>
+
+<div class="space-y-4 pt-2">
+  <%# ヘッダー %>
+  <div class="flex items-center gap-3">
+    <%= link_to fishing_sessions_path, class: "text-water-600" do %>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    <% end %>
+    <h1 class="page-title mb-0">釣行詳細</h1>
+    <%= link_to edit_fishing_session_path(@fishing_session), class: "ml-auto text-xs text-water-600 border border-water-200 rounded-lg px-3 py-1.5" do %>
+      編集
+    <% end %>
+  </div>
+
+  <%# 釣行情報カード %>
+  <div class="card space-y-3">
+    <div class="flex items-center gap-3">
+      <div class="flex gap-1 text-3xl">
+        <span><%= @fishing_session.weather_am_icon %></span>
+        <% if @fishing_session.weather_pm.present? && @fishing_session.weather_pm != @fishing_session.weather_am %>
+          <span class="text-xl self-end text-pebble-400">→</span>
+          <span><%= @fishing_session.weather_pm_icon %></span>
+        <% end %>
+      </div>
+      <div>
+        <p class="text-xl font-bold text-pebble-800"><%= @fishing_session.fished_on.strftime("%Y年%m月%d日") %></p>
+        <p class="text-sm text-pebble-500">
+          <% if @fishing_session.weather_am.present? %>午前: <%= @fishing_session.weather_am %><% end %>
+          <% if @fishing_session.weather_pm.present? %><% if @fishing_session.weather_am.present? %> / <% end %>午後: <%= @fishing_session.weather_pm %><% end %>
+        </p>
+      </div>
+    </div>
+
+    <div class="border-t border-pebble-100 pt-3 space-y-2">
+      <div class="flex gap-2">
+        <span class="text-xs text-pebble-400 w-14 flex-shrink-0">施設</span>
+        <span class="text-sm text-pebble-700 font-medium"><%= @fishing_session.facility.name %></span>
+      </div>
+      <% if @fishing_session.pond_number.present? %>
+        <div class="flex gap-2">
+          <span class="text-xs text-pebble-400 w-14 flex-shrink-0">号池</span>
+          <span class="text-sm text-pebble-700 font-medium"><%= @fishing_session.pond_number %>号池</span>
+        </div>
+      <% end %>
+      <% if @fishing_session.water_condition.present? %>
+        <div class="flex gap-2 items-center">
+          <span class="text-xs text-pebble-400 w-14 flex-shrink-0">水質</span>
+          <% cond = FishingSession::WATER_CONDITIONS.find { |c| c[:value] == @fishing_session.water_condition } %>
+          <span class="text-sm text-pebble-700"><%= cond&.dig(:icon) %> <%= @fishing_session.water_condition %></span>
+        </div>
+      <% end %>
+      <% if @fishing_session.facility.address.present? %>
+        <div class="flex gap-2">
+          <span class="text-xs text-pebble-400 w-14 flex-shrink-0">場所</span>
+          <span class="text-sm text-pebble-600"><%= @fishing_session.facility.address %></span>
+        </div>
+      <% end %>
+      <% if @fishing_session.memo.present? %>
+        <div class="flex gap-2">
+          <span class="text-xs text-pebble-400 w-14 flex-shrink-0">メモ</span>
+          <span class="text-sm text-pebble-600 whitespace-pre-line"><%= @fishing_session.memo %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# 釣果一覧 %>
+  <div>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="section-title">この日の釣果（<%= @catch_records.size %>件）</h2>
+      <%= link_to "釣果を追加",
+            new_catch_record_path(fishing_session_id: @fishing_session.id),
+            class: "text-xs text-water-600 border border-water-200 rounded-lg px-3 py-1.5 font-medium" %>
+    </div>
+
+    <% if @catch_records.empty? %>
+      <div class="card text-center py-8">
+        <p class="text-pebble-400 text-sm mb-2">まだ釣果が記録されていません</p>
+        <%= link_to "釣果を追加する →",
+              new_catch_record_path(fishing_session_id: @fishing_session.id),
+              class: "text-water-600 text-sm font-medium" %>
+      </div>
+    <% else %>
+      <div class="space-y-2">
+        <% @catch_records.each do |record| %>
+          <%= link_to catch_record_path(record), class: "card flex items-center gap-3 hover:border-water-200 transition-colors" do %>
+            <div class="w-10 h-10 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-lg">🐟</span>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <p class="font-medium text-pebble-800 text-sm"><%= record.fish_species %></p>
+                <% if record.size_cm %>
+                  <span class="badge badge-water"><%= record.size_cm %>cm</span>
+                <% end %>
+              </div>
+              <p class="text-xs text-pebble-400 mt-0.5">
+                <%= record.caught_at.strftime("%H:%M") %>
+                <% if record.depth_m %> · 水深 <%= record.depth_m %>m<% end %>
+              </p>
+              <% if record.lure %>
+                <div class="flex items-center gap-2 mt-1">
+                  <div class="flex gap-0.5">
+                    <span class="w-3 h-3 rounded-full border border-pebble-100" style="background-color: <%= record.lure.color_front %>"></span>
+                    <span class="w-3 h-3 rounded-full border border-pebble-100" style="background-color: <%= record.lure.color_back %>"></span>
+                  </div>
+                  <span class="text-xs text-pebble-500 truncate"><%= record.lure.name %></span>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# 削除ボタン %>
+  <div class="pt-2">
+    <%= button_to "この釣行を削除", fishing_session_path(@fishing_session),
+          method: :delete,
+          data: { turbo_confirm: "この釣行を削除しますか？（関連する釣果との紐付けは外れます）" },
+          class: "w-full text-sm text-red-500 border border-red-200 rounded-xl py-2.5 bg-white hover:bg-red-50 transition-colors" %>
+  </div>
+</div>
