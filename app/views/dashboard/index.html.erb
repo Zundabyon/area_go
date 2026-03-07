@@ -14,8 +14,13 @@
       <h1 class="text-xl font-bold mt-0.5"><%= current_user.username %> さん</h1>
       <div class="flex gap-4 mt-3">
         <div class="text-center">
+          <p class="text-2xl font-bold"><%= @session_count %></p>
+          <p class="text-water-300 text-xs">釣行記録</p>
+        </div>
+        <div class="w-px bg-water-600"></div>
+        <div class="text-center">
           <p class="text-2xl font-bold"><%= @catch_count %></p>
-          <p class="text-water-300 text-xs">釣果記録</p>
+          <p class="text-water-300 text-xs">釣果数</p>
         </div>
         <div class="w-px bg-water-600"></div>
         <div class="text-center">
@@ -35,13 +40,13 @@
 
   <%# クイックアクション %>
   <div class="grid grid-cols-2 gap-3">
-    <%= link_to new_catch_record_path, class: "card flex items-center gap-3 hover:border-water-300 transition-colors" do %>
+    <%= link_to new_fishing_session_path, class: "card flex items-center gap-3 hover:border-water-300 transition-colors" do %>
       <span class="w-10 h-10 bg-water-100 rounded-xl flex items-center justify-center flex-shrink-0">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-water-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
       </span>
-      <span class="text-sm font-medium text-pebble-700">釣果を記録</span>
+      <span class="text-sm font-medium text-pebble-700">釣行を記録</span>
     <% end %>
     <%= link_to new_lure_path, class: "card flex items-center gap-3 hover:border-water-300 transition-colors" do %>
       <span class="w-10 h-10 bg-forest-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -53,40 +58,39 @@
     <% end %>
   </div>
 
-  <%# 最近の釣果 %>
+  <%# 最近の釣行 %>
   <div>
     <div class="flex items-center justify-between mb-3">
-      <h2 class="section-title">最近の釣果</h2>
-      <%= link_to "すべて見る", catch_records_path, class: "text-xs text-water-600 hover:underline" %>
+      <h2 class="section-title">最近の釣行</h2>
+      <%= link_to "すべて見る", fishing_sessions_path, class: "text-xs text-water-600 hover:underline" %>
     </div>
 
-    <% if @recent_catch_records.empty? %>
+    <% if @recent_fishing_sessions.empty? %>
       <div class="card text-center py-8">
-        <p class="text-pebble-400 text-sm">まだ釣果が記録されていません</p>
-        <%= link_to "最初の釣果を記録する →", new_catch_record_path, class: "text-water-600 text-sm font-medium mt-2 inline-block" %>
+        <p class="text-3xl mb-2">🎣</p>
+        <p class="text-pebble-400 text-sm">まだ釣行が記録されていません</p>
+        <%= link_to "最初の釣行を記録する →", new_fishing_session_path, class: "text-water-600 text-sm font-medium mt-2 inline-block" %>
       </div>
     <% else %>
       <div class="space-y-2">
-        <% @recent_catch_records.each do |record| %>
-          <%= link_to catch_record_path(record), class: "card flex items-center gap-3 hover:border-water-200 transition-colors" do %>
-            <div class="w-10 h-10 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span class="text-lg">🐟</span>
+        <% @recent_fishing_sessions.each do |session| %>
+          <%= link_to fishing_session_path(session), class: "card flex items-center gap-3 hover:border-water-200 transition-colors" do %>
+            <div class="w-10 h-10 bg-water-50 rounded-xl flex items-center justify-center flex-shrink-0 text-xl">
+              <%= session.weather_icon %>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="font-medium text-pebble-800 text-sm truncate">
-                <%= record.fish_species %> <%= "#{record.size_cm}cm" if record.size_cm %>
+              <p class="font-medium text-pebble-800 text-sm">
+                <%= session.fished_on.strftime("%m月%d日") %>
+                <span class="text-pebble-400 font-normal text-xs ml-1">
+                  <%= [session.weather_am, session.weather_pm].compact.uniq.join("/") %>
+                </span>
               </p>
-              <p class="text-xs text-pebble-400 truncate">
-                <%= record.facility.name %> ·
-                <%= record.caught_at.strftime("%m/%d %H:%M") %>
-              </p>
+              <p class="text-xs text-pebble-400 truncate"><%= session.facility.name %></p>
+              <p class="text-xs text-pebble-300 mt-0.5">釣果 <%= session.catch_records.size %>件</p>
             </div>
-            <% if record.lure %>
-              <div class="flex gap-1 flex-shrink-0">
-                <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= record.lure.color_front %>"></span>
-                <span class="w-4 h-4 rounded-full border border-pebble-200" style="background-color: <%= record.lure.color_back %>"></span>
-              </div>
-            <% end %>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-pebble-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
           <% end %>
         <% end %>
       </div>

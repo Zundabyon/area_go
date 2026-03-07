@@ -30,6 +30,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # 釣行
+  resources :fishing_sessions
+
   # 釣果
   resources :catch_records do
     collection do

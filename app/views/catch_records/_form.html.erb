@@ -1,29 +1,64 @@
 <%= form_with model: catch_record, class: "space-y-5" do |f| %>
+  <%= f.hidden_field :fishing_session_id %>
   <% if catch_record.errors.any? %>
     <div class="bg-red-50 border border-red-200 rounded-xl p-3 text-sm text-red-700">
       <% catch_record.errors.full_messages.each do |msg| %><p><%= msg %></p><% end %>
     </div>
   <% end %>
 
-  <%# 施設 %>
-  <div>
-    <%= f.label :facility_id, "施設", class: "form-label" %>
-    <%= f.select :facility_id,
-          facilities.map { |f| [f.name, f.id] },
-          { include_blank: "施設を選択" },
-          class: "form-input" %>
-    <p class="text-xs text-pebble-400 mt-1">
-      施設が見つからない場合は <%= link_to "こちらから登録", new_facility_path, class: "text-water-600 underline" %>
-    </p>
+  <%# 施設（都道府県 → 施設の2段階選択） %>
+  <div data-controller="prefecture-filter"
+       data-prefecture-filter-facilities-value="<%= facilities.map { |fac| { id: fac.id, name: fac.name, prefecture: fac.prefecture, latitude: fac.latitude, longitude: fac.longitude } }.to_json %>"
+       data-prefecture-filter-initial-prefecture-value="<%= catch_record.facility&.prefecture.to_s %>"
+       data-prefecture-filter-initial-facility-id-value="<%= catch_record.facility_id.to_s %>">
+
+    <%# Step 1: 都道府県 %>
+    <div class="mb-3">
+      <label class="form-label">都道府県</label>
+      <select data-prefecture-filter-target="prefectureSelect"
+              data-action="change->prefecture-filter#filter"
+              class="form-input">
+        <option value="">都道府県を選択</option>
+      </select>
+    </div>
+
+    <%# Step 2: 施設 %>
+    <div>
+      <%= f.label :facility_id, "施設", class: "form-label" %>
+      <%= f.select :facility_id, [],
+            { include_blank: "← 先に都道府県を選択" },
+            class: "form-input",
+            disabled: true,
+            data: {
+              "prefecture-filter-target": "facilitySelect",
+              action: "change->prefecture-filter#facilityChanged"
+            } %>
+      <p class="text-xs text-pebble-400 mt-1">
+        施設が見つからない場合は <%= link_to "こちらから登録", new_facility_path, class: "text-water-600 underline" %>
+      </p>
+    </div>
   </div>
 
-  <%# 魚種 %>
-  <div>
+  <%# 魚種 (プリセット + その他 自由入力) %>
+  <div data-controller="species-picker">
     <%= f.label :fish_species, "魚の種類", class: "form-label" %>
-    <%= f.select :fish_species,
-          CatchRecord::FISH_SPECIES,
-          { include_blank: "種類を選択" },
-          class: "form-input" %>
+    <%= f.hidden_field :fish_species, data: { "species-picker-target": "hiddenInput" } %>
+    <select data-species-picker-target="select"
+            data-action="change->species-picker#selectChanged"
+            class="form-input">
+      <option value="">種類を選択</option>
+      <% CatchRecord::FISH_SPECIES.each do |species| %>
+        <option value="<%= species %>"><%= species %></option>
+      <% end %>
+      <option value="__other__">その他（自由入力）</option>
+    </select>
+    <div data-species-picker-target="customWrapper" class="hidden mt-2">
+      <input type="text"
+             data-species-picker-target="customInput"
+             data-action="input->species-picker#customChanged"
+             class="form-input"
+             placeholder="魚の種類を入力">
+    </div>
   </div>
 
   <%# サイズ %>
@@ -49,10 +84,22 @@
     <p class="text-xs text-pebble-400 mt-1">その日の施設の放流時刻（任意）</p>
   </div>
 
-  <%# 深さ %>
-  <div>
-    <%= f.label :depth_m, "釣れた深さ (m)", class: "form-label" %>
-    <%= f.number_field :depth_m, step: 0.1, min: 0, class: "form-input", placeholder: "例: 1.5" %>
+  <%# 天気・風の強さ %>
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <%= f.label :weather, "天気", class: "form-label" %>
+      <%= f.select :weather,
+            CatchRecord::WEATHERS,
+            { include_blank: "選択" },
+            class: "form-input" %>
+    </div>
+    <div>
+      <%= f.label :wind_strength, "風の強さ", class: "form-label" %>
+      <%= f.select :wind_strength,
+            CatchRecord::WIND_STRENGTHS,
+            { include_blank: "選択" },
+            class: "form-input" %>
+    </div>
   </div>
 
   <%# 釣れた地点（地図） %>
@@ -62,7 +109,8 @@
          data-map-mode-value="catch_pin"
          data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
          data-map-initial-lat-value="<%= catch_record.latitude || 35.6812 %>"
-         data-map-initial-lng-value="<%= catch_record.longitude || 139.7671 %>">
+         data-map-initial-lng-value="<%= catch_record.longitude || 139.7671 %>"
+         data-action="prefecture-filter:facility-selected@document->map#panToFacility">
       <div data-map-target="container" class="w-full rounded-xl overflow-hidden border border-pebble-200" style="height: 220px;" data-turbo-cache="false"></div>
       <%= f.hidden_field :latitude,  data: { "map-target": "latInput" } %>
       <%= f.hidden_field :longitude, data: { "map-target": "lngInput" } %>
@@ -70,44 +118,195 @@
     <p class="text-xs text-pebble-400 mt-1">地図をタップして釣れた地点を指定（任意）</p>
   </div>
 
-  <%# ルアー %>
-  <div>
+  <%# ルアー（フルスクリーンモーダルで新規登録対応） %>
+  <div data-controller="inline-lure">
     <%= f.label :lure_id, "使用ルアー", class: "form-label" %>
     <%= f.select :lure_id,
           lures.map { |l| ["#{l.name} (#{l.lure_type_label})", l.id] },
           { include_blank: "ルアーを選択（任意）" },
-          class: "form-input" %>
+          class: "form-input",
+          data: { "inline-lure-target": "select" } %>
+
+    <button type="button"
+            data-action="click->inline-lure#open"
+            class="mt-2 text-xs text-water-600 hover:text-water-800 font-medium">
+      + 新しいルアーを登録
+    </button>
+
+    <%# フルスクリーンモーダル %>
+    <div data-inline-lure-target="modal"
+         class="hidden fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center">
+      <div class="bg-white w-full max-w-lg max-h-[92dvh] rounded-t-3xl sm:rounded-2xl flex flex-col overflow-hidden">
+
+        <%# モーダルヘッダー %>
+        <div class="flex items-center justify-between px-5 py-4 border-b border-pebble-100 flex-shrink-0">
+          <h2 class="text-base font-semibold text-pebble-800">新しいルアーを登録</h2>
+          <button type="button"
+                  data-action="click->inline-lure#close"
+                  class="text-pebble-400 hover:text-pebble-700 text-2xl leading-none">✕</button>
+        </div>
+
+        <%# スクロール可能なフォーム本体 %>
+        <div class="overflow-y-auto flex-1 px-5 py-4 space-y-5">
+
+          <%# エラー表示 %>
+          <p data-inline-lure-target="error" class="text-sm text-red-600 hidden min-h-0"></p>
+
+          <%# 1. ルアー名 %>
+          <div>
+            <label class="form-label">ルアー名 <span class="text-red-500">*</span></label>
+            <input type="text"
+                   data-inline-lure-target="nameInput"
+                   class="form-input"
+                   placeholder="例: ノア">
+            <p class="text-xs text-pebble-400 mt-1">カラー名・重さは別フィールドに入力してください</p>
+          </div>
+
+          <%# 2. 種類 %>
+          <div>
+            <label class="form-label">種類</label>
+            <div class="grid grid-cols-2 gap-2">
+              <% [["spoon","スプーン"],["crankbait","クランクベイト"],["minnow","ミノー"],["other","その他"]].each do |val, label| %>
+                <label class="flex items-center gap-2 p-3 rounded-xl border border-pebble-200 cursor-pointer has-[:checked]:border-water-500 has-[:checked]:bg-water-50 transition-colors text-sm font-medium">
+                  <input type="radio" name="inline_lure_type" value="<%= val %>"
+                         <%= val == "spoon" ? "checked" : "" %>
+                         data-inline-lure-target="typeSelect"
+                         data-action="change->inline-lure#typeChanged"
+                         class="text-water-600">
+                  <%= label %>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <%# 3. カラー（表） — 常に表示 %>
+          <div>
+            <label class="form-label">カラー（表）</label>
+            <div class="flex items-center gap-3 mb-2">
+              <div data-inline-lure-preview="colorFront"
+                   class="w-12 h-12 rounded-xl border border-pebble-200 flex-shrink-0 shadow-sm"
+                   style="background-color:#ffffff"></div>
+              <input type="hidden" value="#ffffff" data-inline-lure-target="colorFrontInput">
+              <input type="text" value="#ffffff"
+                     data-inline-lure-target="colorFrontHex"
+                     class="w-28 form-input text-sm font-mono"
+                     placeholder="#ffffff" maxlength="7">
+            </div>
+            <div data-inline-lure-picker="colorFrontPicker" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <%# 4. カラー（裏） — ミノーは非表示 %>
+          <div data-inline-lure-target="colorBackWrapper">
+            <label class="form-label">カラー（裏）</label>
+            <div class="flex items-center gap-3 mb-2">
+              <div data-inline-lure-preview="colorBack"
+                   class="w-12 h-12 rounded-xl border border-pebble-200 flex-shrink-0 shadow-sm"
+                   style="background-color:#ffffff"></div>
+              <input type="hidden" value="#ffffff" data-inline-lure-target="colorBackInput">
+              <input type="text" value="#ffffff"
+                     data-inline-lure-target="colorBackHex"
+                     class="w-28 form-input text-sm font-mono"
+                     placeholder="#ffffff" maxlength="7">
+            </div>
+            <div data-inline-lure-picker="colorBackPicker" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <%# 5. 重さ %>
+          <div>
+            <label class="form-label">重さ (g)</label>
+            <input type="number" step="0.1" min="0"
+                   data-inline-lure-target="weightInput"
+                   class="form-input"
+                   placeholder="例: 2.5">
+          </div>
+
+          <%# 6. 浮力 — スプーンは非表示 %>
+          <div data-inline-lure-target="buoyancyWrapper">
+            <label class="form-label">タイプ（浮力）</label>
+            <select data-inline-lure-target="buoyancySelect" class="form-input">
+              <option value="0">ハイフロート</option>
+              <option value="1">フローティング</option>
+              <option value="2">スローフローティング</option>
+              <option value="3" selected>サスペンド</option>
+              <option value="4">スローシンキング</option>
+              <option value="5">シンキング</option>
+            </select>
+          </div>
+
+        </div>
+
+        <%# モーダルフッター（保存ボタン） %>
+        <div class="px-5 py-4 border-t border-pebble-100 flex-shrink-0">
+          <button type="button"
+                  data-action="click->inline-lure#save"
+                  class="w-full btn-primary text-center cursor-pointer">
+            登録してこのルアーを選択
+          </button>
+        </div>
+
+      </div>
+    </div>
   </div>
 
-  <%# 釣り方チャート %>
+  <%# 深さ + 釣り方チャート %>
   <div>
-    <label class="form-label">釣り方チャート</label>
-    <p class="text-xs text-pebble-400 mb-2">水中でのルアーの軌跡を描いてください</p>
+    <%# 深さ入力 %>
+    <div class="mb-3">
+      <%= f.label :depth_m, "釣れた深さ (m)", class: "form-label" %>
+      <%= f.number_field :depth_m, step: 0.1, min: 0,
+            class: "form-input",
+            placeholder: "例: 1.5" %>
+    </div>
+
     <div data-controller="fishing-chart"
          data-fishing-chart-depth-value="<%= catch_record.depth_m || 5.0 %>"
          data-fishing-chart-readonly-value="false"
          data-fishing-chart-existing-data-value="<%= catch_record.fishing_method_data.to_json %>">
-      <div class="flex items-center gap-2 mb-2">
-        <label class="text-xs text-pebble-500">線の色</label>
+
+      <label class="form-label">釣り方チャート</label>
+      <p class="text-xs text-pebble-400 mb-2">水中でのルアーの軌跡を描いてください</p>
+      <div class="flex items-center gap-1.5 mb-2 flex-wrap">
+        <%# モード切替（描く / スタンプ） %>
+        <div class="inline-flex rounded-lg border border-pebble-200 overflow-hidden text-xs mr-1">
+          <button type="button"
+                  data-action="click->fishing-chart#setModeDraw"
+                  data-fishing-chart-target="modeBtn"
+                  data-mode="draw"
+                  class="px-2.5 py-1 bg-water-500 text-white font-medium">✏️ 描く</button>
+          <button type="button"
+                  data-action="click->fishing-chart#setModeStampFish"
+                  data-fishing-chart-target="modeBtn"
+                  data-mode="stamp_fish"
+                  class="px-2.5 py-1 bg-pebble-50 text-pebble-700 border-l border-pebble-200">🐟 魚</button>
+          <button type="button"
+                  data-action="click->fishing-chart#setModeStampHit"
+                  data-fishing-chart-target="modeBtn"
+                  data-mode="stamp_hit"
+                  class="px-2.5 py-1 bg-pebble-50 text-pebble-700 border-l border-pebble-200">⚡ HIT</button>
+        </div>
+        <%# 描画設定 %>
+        <label class="text-xs text-pebble-500">色</label>
         <input type="color" value="#0ea5e9"
                data-fishing-chart-target="colorPicker"
                class="w-7 h-7 rounded cursor-pointer border border-pebble-200">
-        <label class="text-xs text-pebble-500">太さ</label>
-        <select data-fishing-chart-target="lineWidth" class="text-xs border border-pebble-200 rounded px-2 py-1">
-          <option value="2">細い</option>
-          <option value="4" selected>普通</option>
-          <option value="8">太い</option>
+        <select data-fishing-chart-target="lineWidth" class="text-xs border border-pebble-200 rounded px-1.5 py-1">
+          <option value="2">細</option>
+          <option value="4" selected>中</option>
+          <option value="8">太</option>
         </select>
-        <button type="button" data-action="click->fishing-chart#undo"
-                class="text-xs bg-pebble-100 rounded px-2 py-1 hover:bg-pebble-200">戻す</button>
-        <button type="button" data-action="click->fishing-chart#clear"
-                class="text-xs bg-red-50 text-red-600 rounded px-2 py-1 hover:bg-red-100">クリア</button>
+        <%# 操作 %>
+        <div class="ml-auto flex gap-1">
+          <button type="button" data-action="click->fishing-chart#undo"
+                  class="text-xs bg-pebble-100 rounded px-2 py-1 hover:bg-pebble-200">↩ 戻す</button>
+          <button type="button" data-action="click->fishing-chart#clear"
+                  class="text-xs bg-red-50 text-red-600 rounded px-2 py-1 hover:bg-red-100">クリア</button>
+        </div>
       </div>
       <div class="relative rounded-xl overflow-hidden border-2 border-water-200 shadow-inner">
         <canvas data-fishing-chart-target="canvas"
                 class="w-full touch-none"
                 style="height: 260px; cursor: crosshair;"></canvas>
-        <p class="absolute bottom-2 right-2 text-xs text-white/60 pointer-events-none">タップ/ドラッグで描こう</p>
+        <p class="absolute bottom-2 right-2 text-xs text-white/60 pointer-events-none select-none">底の●を上下にドラッグで形を変えられます</p>
       </div>
       <%= f.hidden_field :fishing_method_data, data: { "fishing-chart-target": "dataInput" } %>
     </div>
