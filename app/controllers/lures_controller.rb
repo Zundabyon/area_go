@@ -51,6 +51,6 @@ class LuresController < ApplicationController
   end
 
   def lure_params
-    params.require(:lure).permit(:name, :lure_type, :color_front, :color_back, :weight, :buoyancy)
+    params.require(:lure).permit(:name, :manufacturer, :lure_type, :color_front, :color_back, :weight, :buoyancy)
   end
 end

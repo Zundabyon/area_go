@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // 釣果フォーム内でルアーをその場で登録するコントローラー（フルスクリーンモーダル）
 export default class extends Controller {
   static targets = ["select", "modal",
-                    "nameInput", "typeSelect",
+                    "nameInput", "manufacturerInput", "typeSelect",
                     "colorFrontInput", "colorFrontHex",
                     "colorBackWrapper", "colorBackInput", "colorBackHex",
                     "buoyancyWrapper", "buoyancySelect",
@@ -116,12 +116,13 @@ export default class extends Controller {
 
     const body = {
       lure: {
-        name:        this.nameInputTarget.value.trim(),
-        lure_type:   lureType,
-        color_front: colorFront,
-        color_back:  colorBack,
-        buoyancy:    buoyancy,
-        weight:      this.weightInputTarget.value || ""
+        name:         this.nameInputTarget.value.trim(),
+        manufacturer: this.manufacturerInputTarget.value.trim() || null,
+        lure_type:    lureType,
+        color_front:  colorFront,
+        color_back:   colorBack,
+        buoyancy:     buoyancy,
+        weight:       this.weightInputTarget.value || ""
       }
     }
 
@@ -169,9 +170,10 @@ export default class extends Controller {
     this.element.querySelectorAll("[data-inline-lure-preview]").forEach(el => {
       el.style.backgroundColor = white
     })
-    this.buoyancySelectTarget.value  = "3"
-    this.weightInputTarget.value     = ""
-    this.errorTarget.textContent     = ""
+    this.manufacturerInputTarget.value = ""
+    this.buoyancySelectTarget.value      = "3"
+    this.weightInputTarget.value         = ""
+    this.errorTarget.textContent         = ""
     this.errorTarget.classList.add("hidden")
     this._updateTypeFields()
   }

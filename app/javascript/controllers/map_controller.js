@@ -168,10 +168,13 @@ export default class extends Controller {
       })
       bounds.extend(pos)
       marker.addListener("click", () => {
+        const facility = pin.facility?.name ? `<div>${pin.facility.name}</div>` : ""
+        const lure     = pin.lure?.name ? `<div>${pin.lure.name}</div>` : ""
         infoWindow.setContent(`
           <div style="font-size:13px;padding:4px">
             <strong>${pin.fish_species} ${pin.size_cm ? pin.size_cm + "cm" : ""}</strong><br>
-            ${pin.facility?.name || ""}<br>
+            ${facility}
+            ${lure}
             <a href="/catch_records/${pin.id}" style="color:#0e7490">詳細を見る</a>
           </div>
         `)

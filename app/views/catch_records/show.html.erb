@@ -92,7 +92,7 @@
            data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
            data-map-initial-lat-value="<%= @catch_record.latitude %>"
            data-map-initial-lng-value="<%= @catch_record.longitude %>"
-           data-map-pins-value="<%= [@catch_record.as_json(only: [:id, :latitude, :longitude, :size_cm, :fish_species])].to_json %>">
+           data-map-pins-value="<%= [@catch_record.as_json(only: [:id, :latitude, :longitude, :size_cm, :fish_species], include: { facility: { only: [:name] }, lure: { only: [:name] } })].to_json %>">
         <div data-map-target="container" class="w-full rounded-xl overflow-hidden" style="height: 200px;" data-turbo-cache="false"></div>
       </div>
     </div>

@@ -36,6 +36,9 @@
           </div>
           <div class="min-w-0 flex-1">
             <p class="font-semibold text-pebble-800 text-sm truncate"><%= lure.name %></p>
+            <% if lure.manufacturer.present? %>
+              <p class="text-xs text-pebble-400 truncate"><%= lure.manufacturer %></p>
+            <% end %>
             <div class="flex items-center gap-2 mt-0.5">
               <span class="badge badge-water"><%= lure.lure_type_label %></span>
               <% if lure.weight %>

@@ -26,6 +26,9 @@
       <div>
         <span class="badge badge-water mb-1"><%= @lure.lure_type_label %></span>
         <p class="text-lg font-bold text-pebble-800"><%= @lure.name %></p>
+        <% if @lure.manufacturer.present? %>
+          <p class="text-xs text-pebble-500 mt-1"><%= @lure.manufacturer %></p>
+        <% end %>
       </div>
     </div>
     <dl class="grid grid-cols-2 gap-3 text-sm">

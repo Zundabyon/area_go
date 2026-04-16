@@ -14,6 +14,12 @@
     <p class="text-xs text-pebble-400 mt-1">カラー名・重さは下のフィールドに入力してください</p>
   </div>
 
+  <%# メーカー %>
+  <div>
+    <%= f.label :manufacturer, "メーカー", class: "form-label" %>
+    <%= f.text_field :manufacturer, class: "form-input", placeholder: "例: シマノ" %>
+  </div>
+
   <%# ルアー種類 + 浮力 + カラー（種類に応じて切り替え） %>
   <div data-controller="lure-type">
 

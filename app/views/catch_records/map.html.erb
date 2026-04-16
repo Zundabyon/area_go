@@ -13,7 +13,7 @@
   <div data-controller="map"
        data-map-mode-value="view"
        data-map-api-key-value="<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
-       data-map-pins-value="<%= @catch_records.as_json(only: [:id, :latitude, :longitude, :size_cm, :fish_species], include: { facility: { only: [:name] } }).to_json %>">
+       data-map-pins-value="<%= @catch_records.as_json(only: [:id, :latitude, :longitude, :size_cm, :fish_species], include: { facility: { only: [:name] }, lure: { only: [:name] } }).to_json %>">
     <div data-map-target="container" class="w-full rounded-2xl overflow-hidden border border-pebble-200 shadow-sm" style="height: calc(100vh - 200px);"></div>
   </div>
 </div>

@@ -20,8 +20,9 @@ class Lure < ApplicationRecord
     "other"    => "その他"
   }.freeze
 
-  validates :name,     presence: true
-  validates :lure_type, presence: true
+  validates :name,         presence: true
+  validates :manufacturer, length: { maximum: 255 }, allow_blank: true
+  validates :lure_type,    presence: true
   # スプーンは浮力なし（nil許容）、ミノーはハイフロート(0)対応
   validates :buoyancy, inclusion: { in: 0..5 }, allow_nil: true
   validates :color_front, format: { with: /\A#[0-9a-fA-F]{6}\z/, message: "は有効なカラーコードを入力してください" }
