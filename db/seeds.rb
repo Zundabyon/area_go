@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # db/seeds.rb
 # 冪等に実行できるシードデータ
 
@@ -59,7 +60,7 @@ facilities_data = [
   # --- 九州 ---
   { name: "フィッシングパークひらの",         address: "佐賀県佐賀市富士町上無津呂",                 prefecture: "佐賀県", is_verified: true,                                               description: "九州のエリアトラウトをリードする施設。養殖場を併設したスポーツフィッシングの場。" },
   { name: "阿蘇フィッシングリゾート",         address: "熊本県阿蘇市小里1534",                       prefecture: "熊本県", latitude: 32.978356, longitude: 131.050744, is_verified: true, description: "阿蘇の伏流水を利用。カルデラを望む絶景が広がる。" },
-  { name: "福岡フィッシングセンター 糸島",   address: "福岡県糸島市二丈吉井3012",                   prefecture: "福岡県", latitude: 33.483016, longitude: 130.078687, is_verified: true },
+  { name: "福岡フィッシングセンター 糸島",   address: "福岡県糸島市二丈吉井3012",                   prefecture: "福岡県", latitude: 33.483016, longitude: 130.078687, is_verified: true }
 ]
 
 facilities_data.each do |data|
@@ -260,7 +261,7 @@ lures_data = [
   { name: "パペットサーフェス",    manufacturer: "Smith",             lure_type: :other },
   { name: "バブルマジック",        manufacturer: "Jackson",           lure_type: :other },
   { name: "ダートマジック",        manufacturer: "Jackson",           lure_type: :other },
-  { name: "ヘコヘコマジック",      manufacturer: "Jackson",           lure_type: :other },
+  { name: "ヘコヘコマジック",      manufacturer: "Jackson",           lure_type: :other }
 ]
 
 lures_data.each do |data|
@@ -285,7 +286,7 @@ catch_records_base = [
     size_cm: 32.5, depth_m: 1.5,
     memo:          "朝イチの放流直後、スプーンのただ巻きで連発！表層を意識して巻くのがコツだった。",
     caught_at:     2.days.ago.change(hour: 8,  min: 30),
-    stocking_time: "08:00",
+    stocking_time: "08:00"
   },
   {
     facility_name: "ニセコフィッシングエリア",
@@ -294,7 +295,7 @@ catch_records_base = [
     size_cm: 28.0, depth_m: 0.8,
     memo:          "スプーンに反応なし、クランクに変えたら即ヒット。ゆっくり一定速度で引くとよかった。",
     caught_at:     2.days.ago.change(hour: 10, min: 15),
-    stocking_time: "08:00",
+    stocking_time: "08:00"
   },
   {
     facility_name: "東山湖フィッシングエリア",
@@ -303,7 +304,7 @@ catch_records_base = [
     size_cm: 41.0, depth_m: 2.0,
     memo:          "ミノーのトゥイッチングで大型ブラウンをゲット！富士山バックの写真が最高だった。",
     caught_at:     5.days.ago.change(hour: 14, min: 20),
-    stocking_time: "12:00",
+    stocking_time: "12:00"
   },
   {
     facility_name: "那須高原管釣りパーク",
@@ -312,7 +313,7 @@ catch_records_base = [
     size_cm: 35.5, depth_m: 1.2,
     memo:          "チャートスプーンが爆発。高原の気温が低く魚が元気でファイトが激しかった。",
     caught_at:     10.days.ago.change(hour: 9, min: 45),
-    stocking_time: "09:00",
+    stocking_time: "09:00"
   },
   {
     facility_name: "朝霞ガーデン",
@@ -321,8 +322,8 @@ catch_records_base = [
     size_cm: 25.0, depth_m: 0.5,
     memo:          "クランクで表層引き。ヤマメは朝夕の低光量時が狙い目。小さいがきれいな魚体だった。",
     caught_at:     1.week.ago.change(hour: 7, min: 0),
-    stocking_time: "06:30",
-  },
+    stocking_time: "06:30"
+  }
 ]
 
 catch_records_base.each do |base|
@@ -352,5 +353,5 @@ puts "   ルアー:   #{Lure.count}本"
 puts "   釣果:     #{CatchRecord.count}件"
 puts ""
 puts "📱 ログイン情報:"
-puts "   メール:     test@example.com"
-puts "   パスワード: password123"
+puts "   メール:     test@test.com"
+puts "   パスワード: testtest1029"

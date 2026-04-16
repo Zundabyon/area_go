@@ -3,7 +3,7 @@ class FishingSession < ApplicationRecord
   belongs_to :facility
   has_many :catch_records, dependent: :nullify
 
-  WEATHER_OPTIONS = ["晴れ", "曇り", "雨", "晴れ&雨", "雪"].freeze
+  WEATHER_OPTIONS = [ "晴れ", "曇り", "雨", "晴れ&雨", "雪" ].freeze
   WEATHER_ICONS   = { "晴れ" => "☀️", "曇り" => "☁️", "雨" => "🌧️", "晴れ&雨" => "🌦️", "雪" => "❄️" }.freeze
 
   WATER_CONDITIONS = [
