@@ -9,13 +9,13 @@
 
 ## URL
 
-[AreaGoのURL](https://area-go.onrender.com/)
+（デプロイ後に追記）
 
 ## テストアカウント
 
-| Email         | Password     |
-| ------------- | ------------ |
-| test@test.com | testtest1029 |
+| Email            | Password    |
+| ---------------- | ----------- |
+| test@example.com | password123 |
 
 ---
 
@@ -284,14 +284,11 @@ RUNTEQ というプログラミングスクールで Ruby と Rails を学ぶ中
 > 「あの日と同じ条件で釣れた！」
 
 そんな体験のきっかけになれば、とても嬉しいです。
-ぜひ触っていただき、フィードバックをいただけると嬉しいです。
+
+まだまだ発展途上のアプリではありますが、愛情を込めて作っています。ぜひ触っていただき、フィードバックをいただけると嬉しいです。
 
 ここまでご覧いただき、ありがとうございました。
 
-アプリURL
-https://area-go.onrender.com/
-
-テストアカウント
-| Email | Password |
-| --- | --- |
-| test@test.com | testtest1029 |
+| Email            | Password    |
+| ---------------- | ----------- |
+| test@example.com | password123 |
