@@ -13,9 +13,9 @@
 
 ## テストアカウント
 
-| Email            | Password    |
-| ---------------- | ----------- |
-| test@example.com | password123 |
+| Email            | Password |
+| ---------------- | -------- |
+| test@example.com | test0123 |
 
 ---
 
@@ -289,6 +289,6 @@ RUNTEQ というプログラミングスクールで Ruby と Rails を学ぶ中
 
 ここまでご覧いただき、ありがとうございました。
 
-| Email            | Password    |
-| ---------------- | ----------- |
-| test@example.com | password123 |
+| Email            | Password |
+| ---------------- | -------- |
+| test@example.com | test0123 |
