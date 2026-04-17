@@ -1,56 +1,67 @@
-class LuresController < ApplicationController
-  before_action :set_lure, only: [ :show, :edit, :update, :destroy, :catch_records ]
+// app/javascript/controllers/lure_select_controller.js
+import { Controller } from "@hotwired/stimulus"
 
-  def index
-    @lures = current_user.lures.order(:name)
-    @lures = @lures.where(lure_type: params[:type]) if params[:type].present?
-  end
+// data-controller="lure-select" をつけた要素を管理するコントローラーですわ
+export default class extends Controller {
 
-  def show; end
+  // data-lure-select-target="xxx" で参照できる要素を宣言
+  static targets = [
+    "manufacturer", // メーカーのセレクトボックス
+    "lureType",     // 種別のセレクトボックス
+    "lureName"      // ルアー名のセレクトボックス
+  ]
 
-  def new
-    @lure = current_user.lures.new(buoyancy: 3, color_front: "#ffffff", color_back: "#ffffff")
-  end
+  // data-lure-select-lures-value にJSONを渡すと自動でthis.luresValueで取れますわ
+  static values = {
+    lures: Object  // Rubyの定数をJSONとして受け取る
+  }
 
-  def create
-    @lure = current_user.lures.new(lure_params)
-    respond_to do |format|
-      if @lure.save
-        format.html { redirect_to @lure, notice: "ルアーを登録しました" }
-        format.json { render json: { id: @lure.id, name: @lure.name, lure_type_label: @lure.lure_type_label }, status: :created }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: { errors: @lure.errors.full_messages }, status: :unprocessable_entity }
-      end
-    end
-  end
+  // メーカーが変わったとき
+  manufacturerChanged() {
+    const manufacturer = this.manufacturerTarget.value
 
-  def edit; end
+    // lure_typeをリセット
+    this.lureTypeTarget.innerHTML = '<option value="">種別を選択</option>'
+    this.lureNameTarget.innerHTML = '<option value="">ルアーを選択</option>'
 
-  def update
-    if @lure.update(lure_params)
-      redirect_to @lure, notice: "ルアーを更新しました"
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
+    if (!manufacturer) return
 
-  def destroy
-    @lure.destroy
-    redirect_to lures_path, notice: "ルアーを削除しました", status: :see_other
-  end
+    // 選択されたメーカーが持つ種別だけ表示（空配列の種別は除外）
+    const types = this.luresValue[manufacturer]
+    const typeLabels = {
+      spoon:     "スプーン",
+      crankbait: "クランクベイト",
+      minnow:    "ミノー",
+      other:     "その他"
+    }
 
-  def catch_records
-    @catch_records = @lure.catch_records.includes(:facility).recent
-  end
+    Object.entries(types).forEach(([type, names]) => {
+      if (names.length === 0) return  // ルアーが0件の種別はスキップ
+      const option = document.createElement("option")
+      option.value = type
+      option.textContent = typeLabels[type]
+      this.lureTypeTarget.appendChild(option)
+    })
+  }
 
-  private
+  // 種別が変わったとき
+  lureTypeChanged() {
+    const manufacturer = this.manufacturerTarget.value
+    const lureType     = this.lureTypeTarget.value
 
-  def set_lure
-    @lure = current_user.lures.find(params[:id])
-  end
+    // ルアー名をリセット
+    this.lureNameTarget.innerHTML = '<option value="">ルアーを選択</option>'
 
-  def lure_params
-    params.require(:lure).permit(:name, :manufacturer, :lure_type, :color_front, :color_back, :weight, :buoyancy)
-  end
-end
+    if (!manufacturer || !lureType) return
+
+    // 選択されたメーカー＋種別のルアー名一覧を取得
+    const names = this.luresValue[manufacturer][lureType] || []
+
+    names.forEach(name => {
+      const option = document.createElement("option")
+      option.value = name
+      option.textContent = name
+      this.lureNameTarget.appendChild(option)
+    })
+  }
+}
